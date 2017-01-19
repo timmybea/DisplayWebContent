@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIWebViewDelegate {
 
     @IBOutlet weak var navigationTitle: UINavigationItem!
     @IBOutlet var webView: UIWebView!
@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        if let url = URL(string: "https://www.youtube.com/") {
+        if let url = URL(string: "https://www.google.com/") {
             let urlRequest = URLRequest(url: url)
              webView.loadRequest(urlRequest)
         }
@@ -25,13 +25,12 @@ class ViewController: UIViewController {
 //        self.webView.loadRequest(NSURLRequest(URL: NSBundle.mainBundle().URLForResource("index", withExtension: "html", subdirectory: "faq")!))
     }
 
-    
+    //MARK: basic webview functions
     @IBAction func backAction(_ sender: Any) {
         if webView.canGoBack {
             webView.goBack()
         }
     }
-    
     
     @IBAction func forwardAction(_ sender: Any) {
         if webView.canGoForward {
@@ -49,5 +48,19 @@ class ViewController: UIViewController {
         webView.reload()
     }
     
+    //MARK: webview delegate functions
+    func webViewDidStartLoad(_ webView: UIWebView) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+    }
+    
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        
+        navigationTitle.title = webView.stringByEvaluatingJavaScript(from: "document.title")
+    }
+    
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+    }
 }
 
